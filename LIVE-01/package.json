@@ -2,11 +2,19 @@
   "name": "ms-authentication",
   "version": "1.0.0",
   "description": "Microservice by DIO live code",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "scripts": {
-    "start": "node ./index.js",
+    "dev": "ts-node-dev -r tsconfig-paths/register --inspect --poll --transpile-only --ignore-watch node_modules --respawn src/index.ts",
+    "build": "tsc -p .",
+    "start": "node ./",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jardel Bordignon",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^16.11.8",
+    "ts-node-dev": "^1.1.8",
+    "tsconfig-paths": "^3.11.0",
+    "typescript": "^4.5.2"
+  }
 }
