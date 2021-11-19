@@ -12,7 +12,7 @@ interface IUser {
   password: string
 }
 
-const users: IUser[] = []
+const users: IUser[] = [{"id":"99c00c61-5ca1-4e97-b431-61c137a630c7","name":"Jardel","email":"jardel@email.com","password":"123"}]
 
 // get /users
 userRoutes.get('/', (req: Request, res: Response, next: NextFunction) => {
@@ -40,6 +40,29 @@ userRoutes.post('/', (req: Request, res: Response, next: NextFunction) => {
   users.push(user)
 
   res.status(CREATED).send(user)
+})
+
+// put /users/:uuid
+userRoutes.put('/:uuid', (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
+  const { uuid } = req.params
+
+  const user = users.find(user => user.id === uuid)
+  
+  if (!user) {
+    throw new Error('User not found')
+  }
+  
+  const { name, email, password } = req.body as IUser
+  console.log(name, email, password);
+  
+  user.name = name || user.name
+  user.email = email || user.email 
+  user.password = password || user.password
+
+  const index = users.findIndex(user => user.id === uuid)
+  users[index] = user
+
+  res.status(OK).send(user)
 })
 
 export { userRoutes }
