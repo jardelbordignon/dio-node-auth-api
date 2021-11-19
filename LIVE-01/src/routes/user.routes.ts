@@ -65,4 +65,21 @@ userRoutes.put('/:uuid', (req: Request<{ uuid: string }>, res: Response, next: N
   res.status(OK).send(user)
 })
 
+// delete /users/:uuid
+userRoutes.delete('/:uuid', (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
+  const { uuid } = req.params
+
+  const user = users.find(user => user.id === uuid)
+
+  if (!user) {
+    throw new Error('User not found')
+  }
+
+  const index = users.findIndex(user => user.id === uuid)
+
+  users.splice(index, 1)
+
+  res.status(OK).send()
+})
+
 export { userRoutes }
