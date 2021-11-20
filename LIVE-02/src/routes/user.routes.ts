@@ -1,83 +1,68 @@
 import { Router, Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { v4 as uuid } from 'uuid'
 
-const { OK, CREATED } = StatusCodes
+import { userRepository } from '@/repositories/user.repository'
+import { IUser } from '@/models'
+
+const { OK, CREATED, INTERNAL_SERVER_ERROR } = StatusCodes
 const userRoutes = Router()
 
-interface IUser {
-  id?: string
-  name: string
-  email: string
-  password: string
-}
-
-const users: IUser[] = [{"id":"99c00c61-5ca1-4e97-b431-61c137a630c7","name":"Jardel","email":"jardel@email.com","password":"123"}]
-
 // get /users
-userRoutes.get('/', (req: Request, res: Response, next: NextFunction) => {
+userRoutes.get('/', async (req: Request, res: Response, next: NextFunction) => {
+  const users = await userRepository.findAll()
   res.status(OK).json(users)
 })
 
 // get /users/:uuid
-userRoutes.get('/:uuid', (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
-  const { uuid } = req.params
-
-  const user = users.find(user => user.id === uuid)
-
-  if (!user) {
-    throw new Error('User not found')
+userRoutes.get('/:uuid', async (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
+  try {
+    const { uuid } = req.params
+    const user = await userRepository.findById(uuid)
+    res.status(OK).send(user)
+  } catch (error) {
+    next(error)
   }
-
-  res.status(OK).send(user)
 })
 
 // post /users
-userRoutes.post('/', (req: Request, res: Response, next: NextFunction) => {
-  const { name, email, password } = req.body as IUser
-  const user = { id: uuid(), name, email, password }
+userRoutes.post('/', async (req: Request<{}, IUser>, res: Response, next: NextFunction) => {
+  const { username, password } = req.body
+  const data = { username, password }
 
-  users.push(user)
+  const user = await userRepository.create(data)  
 
   res.status(CREATED).send(user)
 })
 
 // put /users/:uuid
-userRoutes.put('/:uuid', (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
+userRoutes.put('/:uuid', async (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
   const { uuid } = req.params
 
-  const user = users.find(user => user.id === uuid)
+  const user = await userRepository.findById(uuid)
   
   if (!user) {
     throw new Error('User not found')
   }
   
-  const { name, email, password } = req.body as IUser
-  console.log(name, email, password);
+  const { username, password } = req.body
+  const data = {uuid, username, password}
   
-  user.name = name || user.name
-  user.email = email || user.email 
-  user.password = password || user.password
+  const updatedUser = await userRepository.update(data)
 
-  const index = users.findIndex(user => user.id === uuid)
-  users[index] = user
-
-  res.status(OK).send(user)
+  res.status(OK).send(updatedUser)
 })
 
 // delete /users/:uuid
-userRoutes.delete('/:uuid', (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
+userRoutes.delete('/:uuid', async (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
   const { uuid } = req.params
 
-  const user = users.find(user => user.id === uuid)
+  const user = await userRepository.findById(uuid)
 
   if (!user) {
     throw new Error('User not found')
   }
 
-  const index = users.findIndex(user => user.id === uuid)
-
-  users.splice(index, 1)
+  await userRepository.destroy(uuid)
 
   res.status(OK).send()
 })

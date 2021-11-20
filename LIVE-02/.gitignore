@@ -2,3 +2,4 @@
 /dist/
 notes.md
 yarn.lock
+.env
