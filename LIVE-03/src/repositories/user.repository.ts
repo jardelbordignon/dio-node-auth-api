@@ -24,7 +24,23 @@ class UserRepository {
   
       return user
     } catch (error) {
-      throw new RepositoryError('User not found', 403)
+      throw new RepositoryError('User not found', 404)
+    }
+  }
+  
+  findByCredentials = async (username: string, password: string): Promise<IUser | null> => {
+    try {
+      const query = 'SELECT uuid, username FROM app_users WHERE username = $1 AND password = crypt($2, $3)'
+  
+      const values = [username, password, process.env.ELEPHANTSQL_HASH_PWD]
+  
+      const res = await db.query<IUser>(query, values)
+  
+      const [user] = res.rows // mesmo que -> const user = res.rows[0]
+  
+      return user || null
+    } catch (error) {
+      throw new RepositoryError('User not found by credentials', 404)
     }
   }
 
