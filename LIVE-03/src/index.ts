@@ -2,7 +2,7 @@ import express from 'express'
 import 'dotenv/config'
 
 import { routes } from '@/routes'
-import { errorHandler } from '@/middlewares'
+import { errorHandlerMiddleware } from '@/middlewares'
 
 const app = express()
 
@@ -14,6 +14,6 @@ app.use(express.urlencoded({ extended: true }))
 app.use(routes)
 
 // error handler config
-app.use(errorHandler)
+app.use(errorHandlerMiddleware)
 
 app.listen(3000, () => console.log('App running on port 3000'))

@@ -5,7 +5,7 @@ import { RepositoryError, ForbiddenError } from '@/models/errors'
 
 const {BAD_REQUEST, FORBIDDEN, INTERNAL_SERVER_ERROR} = StatusCodes
 
-export const errorHandler = (error: Error, req: Request, res: Response, next: NextFunction) => {
+export const errorHandlerMiddleware = (error: Error, req: Request, res: Response, next: NextFunction) => {
   let statusCode = INTERNAL_SERVER_ERROR
   
   if (error instanceof RepositoryError)
