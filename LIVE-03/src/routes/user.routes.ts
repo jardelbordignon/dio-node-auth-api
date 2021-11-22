@@ -18,6 +18,7 @@ userRoutes.get('/:uuid', async (req: Request<{ uuid: string }>, res: Response, n
   try {
     const { uuid } = req.params
     const user = await userRepository.findById(uuid)
+        
     res.status(OK).send(user)
   } catch (error) {
     next(error)

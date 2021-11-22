@@ -15,7 +15,7 @@ export const basicAuthenticationMiddleware = async (req: Request, res: Response,
     const [authType, token] = authorizationHeader.split(' ')
 
     if (authType !== 'Basic' || !token)
-      throw new ForbiddenError('Invalid authentication type')
+      throw new ForbiddenError('Invalid authentication')
     
     // base64 to string utf-8
     const tokenContent = Buffer.from(token, 'base64').toString('utf-8')

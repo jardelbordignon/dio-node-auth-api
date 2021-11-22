@@ -22,7 +22,7 @@ authorizationRoutes.post(
 
     const payload = { username: user.username }
     const options = { subject: user.uuid }
-    const secretKey = 'xxxxxxxxxx'
+    const secretKey = `${process.env.ELEPHANTSQL_HASH_PWD}`
 
     const jwt = sign(payload, secretKey, options)
 
