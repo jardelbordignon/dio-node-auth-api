@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express'
-import { sign } from 'jsonwebtoken'
+import { sign, SignOptions } from 'jsonwebtoken'
 import { StatusCodes } from 'http-status-codes'
 
 import { basicAuthenticationMiddleware, jwtAuthenticationMiddleware } from '@/middlewares'
@@ -21,7 +21,7 @@ authorizationRoutes.post(
       throw new ForbiddenError('Authentication is required')
 
     const payload = { username: user.username }
-    const options = { subject: user.uuid }
+    const options: SignOptions = { subject: user.uuid, expiresIn: '15min' }
     const secretKey = `${process.env.ELEPHANTSQL_HASH_PWD}`
 
     const jwt = sign(payload, secretKey, options)
