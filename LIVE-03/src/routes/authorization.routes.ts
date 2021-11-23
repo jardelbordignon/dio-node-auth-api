@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express'
 import { sign } from 'jsonwebtoken'
 import { StatusCodes } from 'http-status-codes'
 
-import { basicAuthenticationMiddleware, errorHandlerMiddleware } from '@/middlewares'
+import { basicAuthenticationMiddleware, jwtAuthenticationMiddleware } from '@/middlewares'
 import { ForbiddenError } from '@/models/errors'
 
 const { OK } = StatusCodes
@@ -31,6 +31,13 @@ authorizationRoutes.post(
   } catch (error) {
     next(error)
   }
+})
+
+authorizationRoutes.use(jwtAuthenticationMiddleware)
+
+// essa rota só é acessível após passar pela validação do JWT, então basta retornar um OK
+authorizationRoutes.post('/token/validate', (req: Request, res: Response, next: NextFunction) => {
+  res.status(OK).send()
 })
 
 
